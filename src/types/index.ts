@@ -1,49 +1,82 @@
-export interface Icon {
+// Personal portfolio types
+
+// Personal information
+export interface PersonalInfo {
   id: string;
   name: string;
-  category: string;
-  style: 'linear' | 'filled' | 'duotone' | 'hand-drawn';
-  tags: string[];
-  author: string;
-  likes: number;
-  downloads: number;
-  svg: string;
-  previewUrl?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  title: string;
+  bio: string;
+  avatar: string;
+  email: string;
+  phone: string;
+  location: string;
+  website: string;
+  socialLinks: SocialLink[];
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface Illustration {
+export interface SocialLink {
   id: string;
-  name: string;
-  category: string;
-  tags: string[];
-  author: string;
-  likes: number;
-  downloads: number;
-  previewUrl: string;
-  fileUrl?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  platform: string;
+  url: string;
+  icon: string;
+  order: number;
 }
 
-export interface AITool {
+// Work experience
+export interface WorkExperience {
   id: string;
-  name: string;
+  company: string;
+  position: string;
+  startDate: string;
+  endDate: string | null;
   description: string;
-  icon: string;
-  category: 'icon' | 'image' | 'video' | 'text';
-  isNew?: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  skills: string[];
+  order: number;
 }
 
-export interface MaterialCategory {
+// Education
+export interface Education {
   id: string;
-  name: string;
-  icon: string;
-  count: number;
-  path: string;
-  createdAt?: string;
-  updatedAt?: string;
+  institution: string;
+  degree: string;
+  field: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  order: number;
+}
+
+// Portfolio project
+export interface PortfolioProject {
+  id: string;
+  title: string;
+  description: string;
+  content: string; // Rich text content
+  category: string;
+  tags: string[];
+  coverImage: string;
+  images: ProjectImage[];
+  demoUrl: string | null;
+  sourceUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProjectImage {
+  id: string;
+  projectId: string;
+  url: string;
+  alt: string;
+  order: number;
+}
+
+// API response types
+export interface PaginatedResponse<T> {
+  list: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+  hasMore: boolean;
 }

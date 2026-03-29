@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { AuthProvider } from "@/components/AuthProvider";
 import Header from "@/components/Header";
-import AuthModalWrapper from "@/components/AuthModalWrapper";
+import RouteLoading from "@/components/RouteLoading";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "iconfont - 矢量图标库",
-  description: "从素材到AI工具，轻松做设计",
+  title: "Web工程师-邓子健",
+  description: "这是我的一个个人网站介绍",
 };
 
 export default function RootLayout({
@@ -34,11 +33,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
-          <AuthProvider>
-            <Header />
-            <main className="flex-1">{children}</main>
-            <AuthModalWrapper />
-          </AuthProvider>
+          <RouteLoading />
+          <Header />
+          <main className="flex-1">{children}</main>
         </ThemeProvider>
       </body>
     </html>
