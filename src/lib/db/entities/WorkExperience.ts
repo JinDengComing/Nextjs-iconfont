@@ -1,28 +1,28 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity('work_experience')
+@Entity({ name: "work_experience" })
 export class WorkExperience {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ type: 'varchar', length: 200, nullable: false })
-  company: string;
+  company!: string;
 
   @Column({ type: 'varchar', length: 200, nullable: false })
-  position: string;
+  position!: string;
 
   @Column({ type: 'date', nullable: true })
-  startDate: Date;
+  startDate!: Date;
 
   @Column({ type: 'date', nullable: true })
-  endDate: Date | null;
+  endDate!: Date | null;
 
   @Column({ type: 'text', nullable: false })
-  description: string;
+  description!: string;
 
   @Column({ type: 'json' })
-  skills: string[];
+  skills!: string[];
 
   @Column({ type: 'int', default: 0 })
-  order: number;
+  order!: number;
 }

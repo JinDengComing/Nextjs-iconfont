@@ -12,6 +12,7 @@ import { ProjectImage } from './entities/ProjectImage';
 // 防止开发环境下重复创建连接
 const globalForData = global as unknown as { dataSource: DataSource };
 
+console.log('检测是否原本就存在数据库连接是实例：-----', globalForData?.dataSource)
 
 const dataSource = globalForData?.dataSource || new DataSource({
   type: 'mysql',
@@ -20,6 +21,13 @@ const dataSource = globalForData?.dataSource || new DataSource({
   username: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD || 'your_password',
   database: process.env.DB_NAME || 'portfolio',
+  // 强制驱动使用更稳健的方式
+  connectorPackage: "mysql2",
+  extra: {
+    connectionLimit: 10,
+    // 某些旧版 MySQL 插件需要明确指定
+    authProtocol: 'mysql_native_password'
+  },
   entities: [
     PersonalInfo,
     SocialLink,
@@ -33,5 +41,9 @@ const dataSource = globalForData?.dataSource || new DataSource({
   // synchronize: true, // 开发环境使用，生产环境应该关闭
   logging: true, // 开启日志以便调试
 });
+
+console.log('正在尝试连接数据库......');
 if (process.env.NODE_ENV !== "production") globalForData.dataSource = dataSource;
+
+
 export default dataSource;

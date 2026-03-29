@@ -10,8 +10,9 @@ class DatabaseService {
   }
 
   async initialize() {
-    if (!this.initialized && !dataSource?.isInitialized) {
+    if (!this.initialized) {
       try {
+        if (dataSource?.isInitialized) await (dataSource.destroy)()
         await (dataSource.initialize)();
         console.log('数据库连接成功！');
         this.initialized = true;
@@ -26,6 +27,7 @@ class DatabaseService {
   async getPersonalInfo() {
     // 确保数据库连接已初始化
     if (!this.initialized) {
+      console.log(dataSource?.isInitialized)
       await this.initialize();
     }
 
@@ -34,7 +36,8 @@ class DatabaseService {
     console.log("📦 Registered entities:", registeredEntities);
 
 
-    const repo = dataSource.getRepository<PersonalInfo>("PersonalInfo");
+    const repo = dataSource.getRepository(PersonalInfo);
+
     return repo.find({ relations: ['socialLinks'] });
   }
 

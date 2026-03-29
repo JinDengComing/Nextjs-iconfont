@@ -36,3 +36,26 @@ synchronize: true,
 query failed: ALTER TABLE `social_links` ADD CONSTRAINT `FK_e89409c923138326fbd66cfa418` FOREIGN KEY (`personalInfoId`) REFERENCES `personal_info`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 error: Error: Duplicate foreign key constraint name 'FK_e89409c923138326fbd66cfa418'
 ```
+
+
+
+### 生产环境中的实体类被打包编译混淆了报错
+
+``````js
+📦 Registered entities: [ 'rD', 'rw', 'rL', 'rB', 'rP', 'rU' ]
+
+Get personal info error: s: No metadata for "PersonalInfo" was found.
+
+    at r.DataSource.getMetadata (.next/server/chunks/[root-of-the-server]__0x4l03o._.js:97:443323)
+
+    at get metadata [as metadata] (.next/server/chunks/[root-of-the-server]__0x4l03o._.js:6:2023)
+
+    at r.Repository.find (.next/server/chunks/[root-of-the-server]__0x4l03o._.js:6:3952)
+
+    at Object.getPersonalInfo (.next/server/chunks/[root-of-the-server]__0x4l03o._.js:97:499342)
+
+    at E (.next/server/chunks/[root-of-the-server]__04l3rrq._.js:1:1441)
+
+
+``````
+

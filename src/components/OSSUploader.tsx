@@ -95,7 +95,7 @@ export default function OSSUploader({
       />
       <label
         htmlFor="oss-uploader"
-        className={`cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-4 hover:border-blue-500 transition-colors ${disabled || isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`cursor-pointer flex flex-col items-center justify-center border-2 border-dashed border-gray-200 dark:border-gray-300 rounded-lg p-4 hover:border-blue-500 transition-colors ${disabled || isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
       >
         {isUploading ? (
           <div className="flex flex-col items-center">
@@ -120,9 +120,9 @@ export default function OSSUploader({
           </div>
         ) : (
           <div className="flex flex-col items-center">
-            <Upload className="w-12 h-12 text-gray-400 dark:text-gray-500 mb-2" />
-            <span className="text-sm text-gray-600 dark:text-gray-400">点击上传文件</span>
-            <span className="text-xs text-gray-500 dark:text-gray-600 mt-1">支持 {accept}，最大 {maxSize / 1024 / 1024}MB</span>
+            <Upload className="w-12 h-12 text-gray-400 dark:text-gray-300 mb-2" />
+            <span className="text-sm text-gray-600 dark:text-gray-200">点击上传文件</span>
+            <span className="text-xs text-gray-500 dark:text-gray-200 mt-1">支持 {accept}，最大 {maxSize / 1024 / 1024}MB</span>
           </div>
         )}
       </label>

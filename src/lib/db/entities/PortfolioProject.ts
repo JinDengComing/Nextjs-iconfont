@@ -2,44 +2,44 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn, Up
 import type { Relation } from 'typeorm';
 import { ProjectImage } from './ProjectImage';
 
-@Entity('portfolio_projects')
+@Entity({ name: "portfolio_projects" })
 export class PortfolioProject {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ type: 'varchar', length: 200, nullable: false })
-  title: string;
+  title!: string;
 
   @Column({ type: 'text', nullable: false })
-  description: string;
+  description!: string;
 
   @Column({ type: 'text', nullable: false })
-  content: string; // Rich text content
+  content!: string; // Rich text content
 
   @Column({ type: 'varchar', length: 100, nullable: false })
-  category: string;
+  category!: string;
 
   @Column({ type: 'json' })
-  tags: string[];
+  tags!: string[];
 
   @Column({ type: 'varchar', length: 500, nullable: false })
-  coverImage: string;
+  coverImage!: string;
 
   @OneToMany(() => ProjectImage, projectImage => projectImage.project, {
     cascade: true,
     eager: true
   })
-  images: Relation<ProjectImage>[];
+  images!: Relation<ProjectImage>[];
 
   @Column({ type: 'varchar', length: 500, nullable: true })
-  demoUrl: string | null;
+  demoUrl!: string | null;
 
   @Column({ type: 'varchar', length: 500, nullable: true })
-  sourceUrl: string | null;
+  sourceUrl!: string | null;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

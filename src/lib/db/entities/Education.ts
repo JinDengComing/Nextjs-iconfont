@@ -1,28 +1,28 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity('education')
+@Entity({ name: "education" })
 export class Education {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ type: 'varchar', length: 200, nullable: false })
-  institution: string;
+  institution!: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false })
-  degree: string;
+  degree!: string;
 
   @Column({ type: 'varchar', length: 100, nullable: false })
-  field: string;
+  field!: string;
 
   @Column({ type: 'date', nullable: true })
-  startDate: Date;
+  startDate!: Date;
 
   @Column({ type: 'date', nullable: true })
-  endDate: Date;
+  endDate!: Date;
 
   @Column({ type: 'text', nullable: false })
-  description: string;
+  description!: string;
 
   @Column({ type: 'int', default: 0 })
-  order: number;
+  order!: number;
 }

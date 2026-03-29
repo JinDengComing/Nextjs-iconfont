@@ -10,19 +10,23 @@ interface RequestConfig {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   headers?: HeadersInit;
   body?: any;
+  params?: any
 }
 
 async function request<T>(
   endpoint: string,
   config: RequestConfig = {}
 ): Promise<ApiResponse<T>> {
-  const { method = 'GET', headers = {}, body } = config;
+  const { method = 'GET', headers = {}, body, params } = config;
 
   const defaultHeaders: HeadersInit = {
     'Content-Type': 'application/json',
   };
 
-  const response = await fetch(`/api${endpoint}`, {
+  //query请求参数
+  const queryString = new URLSearchParams(params).toString();
+
+  const response = await fetch(`/api${endpoint}?${queryString}`, {
     method,
     headers: { ...defaultHeaders, ...headers },
     body: body ? JSON.stringify(body) : undefined,
@@ -38,20 +42,20 @@ export const api = {
   personalInfo: {
     get: () => request<any>('/personal-info'),
   },
-  
+
   // Portfolio endpoints
   portfolio: {
-    getList: (params?: { page?: number; pageSize?: number }) => 
+    getList: (params?: { page?: number; pageSize?: number }) =>
       request<any>('/portfolio', { params }),
     getById: (id: string) => request<any>(`/portfolio/${id}`),
     create: (data: any) => request<any>('/portfolio', { method: 'POST', body: data }),
     update: (id: string, data: any) => request<any>(`/portfolio/${id}`, { method: 'PUT', body: data }),
     delete: (id: string) => request<any>(`/portfolio/${id}`, { method: 'DELETE' }),
   },
-  
+
   // Upload endpoint
   upload: {
-    image: (formData: FormData) => 
+    image: (formData: FormData) =>
       request<any>('/upload/image', {
         method: 'POST',
         headers: {},

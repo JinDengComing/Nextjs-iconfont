@@ -5,8 +5,15 @@ import { useParams, useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { PortfolioProject } from '@/types';
 import { ArrowLeft, ExternalLink, Github as GithubIcon, Upload, Plus, Trash2 } from 'lucide-react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+
+import dynamic from 'next/dynamic';
+import 'react-quill-new/dist/quill.snow.css'; // 或者旧库的 css
+
+const ReactQuill = dynamic(() => import('react-quill-new'), {
+  ssr: false,
+  loading: () => <p>加载编辑器中...</p>
+});
+
 
 export default function PortfolioDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -46,7 +53,7 @@ export default function PortfolioDetailPage() {
         setCategory(response.data.category);
         setTags(response.data.tags);
         setCoverImage(response.data.coverImage);
-        setImages(response.data.images.map(img => ({ url: img.url, alt: img.alt })));
+        setImages(response.data.images.map((img: any) => ({ url: img.url, alt: img.alt })));
         setDemoUrl(response.data.demoUrl);
         setSourceUrl(response.data.sourceUrl);
       } else {
@@ -181,7 +188,7 @@ export default function PortfolioDetailPage() {
                     type="file"
                     accept="image/*"
                     onChange={(e) => e.target.files && e.target.files[0] && handleImageUpload(e.target.files[0], true)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg"
+                    className="px-4 py-2 border border-gray-200 text-slate-400 rounded-lg"
                   />
                 </div>
               </div>
@@ -193,7 +200,7 @@ export default function PortfolioDetailPage() {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-200 text-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -204,7 +211,7 @@ export default function PortfolioDetailPage() {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-200 text-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -212,9 +219,9 @@ export default function PortfolioDetailPage() {
               <div>
                 <label className="block text-gray-700 mb-2 font-medium">项目内容</label>
                 <ReactQuill
-                  value={content}
+                  value={content || ''}
                   onChange={setContent}
-                  className="border border-gray-300 rounded-lg"
+                  className="border border-gray-200 text-slate-400 rounded-lg"
                 />
               </div>
 
@@ -225,7 +232,7 @@ export default function PortfolioDetailPage() {
                   type="text"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-200 text-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
 
@@ -252,7 +259,7 @@ export default function PortfolioDetailPage() {
                     onChange={(e) => setTagInput(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && addTag()}
                     placeholder="输入标签并按回车添加"
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 px-4 py-2 border border-gray-200 text-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <button
                     onClick={addTag}
@@ -267,7 +274,7 @@ export default function PortfolioDetailPage() {
               <div>
                 <label className="block text-gray-700 mb-2 font-medium">项目图片</label>
                 <div className="grid grid-cols-4 gap-4 mb-4">
-                  {images.map((img, index) => (
+                  {images?.length > 0 && images.map((img, index) => (
                     <div key={index} className="relative">
                       <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
                         <img src={img.url} alt={img.alt} className="w-full h-full object-cover" />
@@ -280,7 +287,7 @@ export default function PortfolioDetailPage() {
                       </button>
                     </div>
                   ))}
-                  <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-blue-500 cursor-pointer">
+                  <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-200 text-slate-400 hover:border-blue-500 cursor-pointer">
                     <input
                       type="file"
                       accept="image/*"
@@ -305,7 +312,7 @@ export default function PortfolioDetailPage() {
                     value={demoUrl || ''}
                     onChange={(e) => setDemoUrl(e.target.value || null)}
                     placeholder="https://example.com"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-200 text-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div>
@@ -315,7 +322,7 @@ export default function PortfolioDetailPage() {
                     value={sourceUrl || ''}
                     onChange={(e) => setSourceUrl(e.target.value || null)}
                     placeholder="https://github.com/username/repo"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-gray-200 text-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -343,11 +350,11 @@ export default function PortfolioDetailPage() {
             <div className="space-y-12">
               {/* Cover Image */}
               <div className="rounded-lg overflow-hidden shadow-lg">
-                <img
+                {project.coverImage && <img
                   src={project.coverImage}
                   alt={project.title}
                   className="w-full h-96 object-cover"
-                />
+                />}
               </div>
 
               {/* Project Info */}
