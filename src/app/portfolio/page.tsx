@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 import { PortfolioProject } from '@/types';
+import { useTheme } from '@/components/ThemeProvider';
 import { ArrowRight, ExternalLink, Github as GithubIcon } from 'lucide-react';
 
 export default function PortfolioPage() {
+  const { theme } = useTheme();
   const [projects, setProjects] = useState<PortfolioProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -86,63 +88,68 @@ export default function PortfolioPage() {
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           {projects.length > 0 ? (
-            <div className="space-y-12">
+            <div className="grid grid-cols-1 gap-8">
               {projects.map((project) => (
-                <div key={project.id} className="flex flex-col md:flex-row gap-8">
-                  <div className="md:w-2/5">
-                    <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden shadow-md">
-                      {project.coverImage && <img
-                        src={project.coverImage}
-                        alt={project.title}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      />}
+                <div key={project.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 transition-shadow hover:shadow-xl"
+                style={theme=='light'?{backgroundColor:'#f9f9f9',border:'1px solid #e5e5e5'}:{}}
+                
+                >
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-2/5">
+                      <div className="aspect-w-16 aspect-h-9">
+                        {project.coverImage && <img
+                          src={project.coverImage}
+                          alt={project.title}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />}
+                      </div>
                     </div>
-                  </div>
-                  <div className="md:w-3/5">
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium">
-                        {project.category}
-                      </span>
-                    </div>
-                    <h2 className="text-2xl font-bold text-foreground mb-3">{project.title}</h2>
-                    <p className="text-gray-600 dark:text-gray-400 mb-6">{project.description}</p>
-                    <div className="flex flex-wrap gap-2 mb-6">
-                      {project.tags.map((tag, index) => (
-                        <span key={index} className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs text-gray-700 dark:text-gray-300">
-                          {tag}
+                    <div className="md:w-3/5 p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium">
+                          {project.category}
                         </span>
-                      ))}
-                    </div>
-                    <div className="flex flex-wrap gap-4">
-                      <a
-                        href={`/portfolio/${project.id}`}
-                        className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                      >
-                        查看详情
-                        <ArrowRight size={18} />
-                      </a>
-                      {project.demoUrl && (
+                      </div>
+                      <h2 className="text-2xl font-bold text-foreground mb-3">{project.title}</h2>
+                      <p className="text-gray-600 dark:text-gray-400 mb-6">{project.description}</p>
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {project.tags.map((tag, index) => (
+                          <span key={index} className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs text-gray-700 dark:text-gray-300">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex flex-wrap gap-4">
                         <a
-                          href={project.demoUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-6 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                          href={`/portfolio/${project.id}`}
+                          className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                         >
-                          在线演示
-                          <ExternalLink size={18} />
+                          查看详情
+                          <ArrowRight size={18} />
                         </a>
-                      )}
-                      {project.sourceUrl && (
-                        <a
-                          href={project.sourceUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-6 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-                        >
-                          源代码
-                          <GithubIcon size={18} />
-                        </a>
-                      )}
+                        {project.demoUrl && (
+                          <a
+                            href={project.demoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-6 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                          >
+                            在线演示
+                            <ExternalLink size={18} />
+                          </a>
+                        )}
+                        {project.sourceUrl && (
+                          <a
+                            href={project.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-6 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                          >
+                            源代码
+                            <GithubIcon size={18} />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
