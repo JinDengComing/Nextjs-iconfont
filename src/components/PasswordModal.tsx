@@ -14,15 +14,35 @@ export default function PasswordModal({ isOpen, onClose, onPasswordVerify }: Pas
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const expectedPassword = process.env.NEXT_PUBLIC_VERIFICATION_PASSWORD;
-    
-    if (password === expectedPassword) {
-      onPasswordVerify(true);
-      onClose();
-    } else {
-      setError('密码错误，请重新输入');
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/verify/password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password }),
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.data.isVerified) {
+        onPasswordVerify(true);
+        onClose();
+      } else {
+        setError(data.message || '密码错误，请重新输入');
+      }
+    } catch (error) {
+      console.error('密码验证请求失败:', error);
+      setError('网络错误，请稍后重试');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -31,13 +51,13 @@ export default function PasswordModal({ isOpen, onClose, onPasswordVerify }: Pas
       <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full">
         <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">请输入验证密码</h2>
         <p className="text-gray-600 dark:text-gray-400 mb-6">只有验证通过后才能上传图片和保存页面</p>
-        
+
         {error && (
           <div className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 p-3 rounded-lg mb-4">
             {error}
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-gray-700 dark:text-gray-300 mb-2">密码</label>
@@ -60,9 +80,10 @@ export default function PasswordModal({ isOpen, onClose, onPasswordVerify }: Pas
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              disabled={loading}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-blue-500 disabled:cursor-not-allowed"
             >
-              验证
+              {loading ? '验证中...' : '验证'}
             </button>
           </div>
         </form>
