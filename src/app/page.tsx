@@ -5,8 +5,11 @@ import { api } from '@/lib/api';
 import { PersonalInfo, WorkExperience, Education, PortfolioProject } from '@/types';
 import { MapPin, Mail, Phone, Globe, Linkedin, Github, Twitter, Instagram, Edit } from 'lucide-react';
 import OSSUploader from '@/components/OSSUploader';
+import { cn } from '@/lib/utils';
+import { useTheme } from '@/components/ThemeProvider';
 
 export default function Home() {
+  const { theme } = useTheme();
   const [personalInfo, setPersonalInfo] = useState<PersonalInfo | null>(null);
   const [workExperience, setWorkExperience] = useState<WorkExperience[]>([]);
   const [education, setEducation] = useState<Education[]>([]);
@@ -22,8 +25,7 @@ export default function Home() {
     try {
       setAvatarUploading(true);
       // 这里应该调用API更新个人信息中的头像URL
-      // 模拟API调用
-      await new Promise(resolve => setTimeout(resolve, 1000));
+
 
       // 更新本地状态
       if (personalInfo) {
@@ -77,7 +79,7 @@ export default function Home() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">加载中...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">加载中...</p>
         </div>
       </div>
     );
@@ -100,7 +102,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white py-20">
         <div className="container mx-auto px-4">
@@ -188,19 +190,19 @@ export default function Home() {
       </section>
 
       {/* Work Experience Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">工作履历</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-12 text-center">工作履历</h2>
           <div className="space-y-8">
             {workExperience.length > 0 ? (
               workExperience.map((exp) => (
                 <div key={exp.id} className="flex flex-col md:flex-row gap-6  border-b-indigo-500">
                   <div className="md:w-1/4">
-                    <div className="bg-blue-100 rounded-lg p-4">
-                      <p className="font-semibold text-blue-700">{exp.company}</p>
+                    <div className={cn(" dark:bg-blue-900/30 bg-blue-100 rounded-lg p-4")} style={theme === 'light' ? { color: 'var(--foreground)', background: 'var(--light)' } : {}}>
+                      <p className="font-semibold text-blue-700 dark:text-blue-400">{exp.company}</p>
                       {
                         exp.startDate &&
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-400" style={{ color: theme === 'light' ? 'var(--foreground)' : '#ededed' }}>
                           {new Date(exp.startDate).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' })} -
                           {exp.endDate ? new Date(exp.endDate).toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' }) : '至今'}
                         </p>
@@ -208,11 +210,11 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="md:w-3/4">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2">{exp.position}</h3>
-                    <p className="text-gray-600 mb-4">{exp.description}</p>
+                    <h3 className="text-xl font-bold text-foreground mb-2">{exp.position}</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4" style={{ color: 'var(--foreground)' }}>{exp.description}</p>
                     <div className="flex flex-wrap gap-2">
                       {exp.skills.map((skill, index) => (
-                        <span key={index} className="px-3 py-1 bg-gray-100 rounded-full text-sm text-gray-700">
+                        <span key={index} className="px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-sm text-gray-700 dark:text-gray-300" style={theme === 'light' ? { color: 'var(--foreground)', background: 'var(--light)' } : {}}>
                           {skill}
                         </span>
                       ))}
@@ -222,7 +224,7 @@ export default function Home() {
               ))
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-600">暂无工作履历数据</p>
+                <p className="text-gray-600 dark:text-gray-400">暂无工作履历数据</p>
               </div>
             )}
           </div>
@@ -230,10 +232,10 @@ export default function Home() {
       </section>
 
       {/* Portfolio Preview Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">作品集</h2>
+            <h2 className="text-3xl font-bold text-foreground">作品集</h2>
             <a
               href="/portfolio"
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -246,25 +248,29 @@ export default function Home() {
             {
               projectList?.length > 0 &&
               projectList.map((_: PortfolioProject) => (
-                <div className="bg-gray-50 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow" key={_?.id}>
-                  <div className="h-48 bg-gray-200 flex items-center justify-center">
-                    <p className="text-gray-500">{_.coverImage || '项目预览图'}</p>
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow" key={_?.id} style={theme === 'light' ? { background: 'var(--light)' } : {}}>
+                  <div className="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                    {_.coverImage ? (
+                      <img src={_.coverImage} alt="Cover" className="w-full h-full object-cover" />
+                    ) : (
+                      <p className="text-gray-500 dark:text-gray-400">{'项目预览图'}</p>
+                    )}
                   </div>
                   <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{_.title}</h3>
-                    <p className="text-gray-600 mb-4">{_.description}</p>
+                    <h3 className="text-xl font-semibold text-foreground mb-2">{_.title}</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4" style={{ color: 'var(--foreground)' }}>{_.description}</p>
                     <div className="flex flex-wrap gap-2 mb-4">
                       {_.tags?.length > 0 &&
                         _.tags.map((tag: string) => (
-                          <span className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-700">{tag}</span>
+                          <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-xs text-gray-700 dark:text-gray-300">{tag}</span>
                         ))
                       }
                       {/* <span className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-700">前端</span>
                       <span className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-700">React</span> */}
                     </div>
                     <a
-                      href="/portfolio/1"
-                      className="text-blue-600 hover:text-blue-800 font-medium"
+                      href={`/portfolio/${_.id}`}
+                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
                     >
                       查看详情 →
                     </a>
@@ -277,22 +283,22 @@ export default function Home() {
       </section>
 
       {/* Education Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">教育背景</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-12 text-center">教育背景</h2>
           <div className="space-y-8">
             {education.length > 0 ? (
               education.map((edu) => (
                 <div key={edu.id} className="flex flex-col md:flex-row gap-6">
                   <div className="md:w-1/4">
-                    <div className="bg-green-100 rounded-lg p-4">
-                      <p className="font-semibold text-green-700">{edu.institution}</p>
-                      {edu.startDate && <p className="text-sm text-gray-600">
+                    <div className="bg-green-100 dark:bg-green-900/30 rounded-lg p-4">
+                      <p className="font-semibold text-green-700 dark:text-green-400">{edu.institution}</p>
+                      {edu.startDate && <p className="text-sm text-gray-600 dark:text-gray-400">
                         {new Date(edu.startDate).toLocaleDateString('zh-CN', { year: 'numeric' })} -
                         {new Date(edu.endDate).toLocaleDateString('zh-CN', { year: 'numeric' })}
                       </p>}
                       {
-                        edu.degree && <p className="text-sm text-gray-600">{edu.degree}</p>
+                        edu.degree && <p className="text-sm text-gray-600 dark:text-gray-400">{edu.degree}</p>
                       }
                     </div>
                   </div>
@@ -304,7 +310,7 @@ export default function Home() {
               ))
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-600">暂无教育背景数据</p>
+                <p className="text-gray-600 dark:text-gray-400">暂无教育背景数据</p>
               </div>
             )}
           </div>

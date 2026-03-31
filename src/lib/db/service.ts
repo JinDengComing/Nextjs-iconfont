@@ -135,7 +135,45 @@ class DatabaseService {
       await this.initialize();
     }
     const repo = dataSource.getRepository(PortfolioProject);
-    await repo.update(id, project);
+    
+    // 获取当前项目及其关联的图片
+    const existingProject = await repo.findOne({
+      where: { id },
+      relations: ['images'],
+    });
+    
+    if (!existingProject) {
+      return null;
+    }
+    
+    // 分离基本字段和关系字段
+    const { images, ...updateData } = project;
+    
+    // 更新基本字段
+    Object.assign(existingProject, updateData);
+    
+    // 处理图片更新
+    if (images !== undefined) {
+      // 清除现有的图片关联
+      existingProject.images = [];
+      
+      // 添加新的图片
+      if (Array.isArray(images)) {
+        images.forEach((img, index) => {
+          const projectImage = new ProjectImage();
+          projectImage.url = img.url;
+          projectImage.alt = img.alt || '';
+          projectImage.order = img.order || index;
+          projectImage.project = existingProject;
+          existingProject.images.push(projectImage);
+        });
+      }
+    }
+    
+    // 保存项目及其关联的图片（利用 cascade 选项）
+    await repo.save(existingProject);
+    
+    // 重新获取项目及其关联数据
     return repo.findOne({
       where: { id },
       relations: ['images'],

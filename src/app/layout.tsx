@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { VerificationProvider } from "@/components/VerificationContext";
 import Header from "@/components/Header";
 import RouteLoading from "@/components/RouteLoading";
 
@@ -33,9 +34,11 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
-          <RouteLoading />
-          <Header />
-          <main className="flex-1">{children}</main>
+          <VerificationProvider>
+            <RouteLoading />
+            <Header />
+            <main className="flex-1">{children}</main>
+          </VerificationProvider>
         </ThemeProvider>
       </body>
     </html>

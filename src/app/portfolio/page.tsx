@@ -48,7 +48,7 @@ export default function PortfolioPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">加载中...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">加载中...</p>
         </div>
       </div>
     );
@@ -71,7 +71,7 @@ export default function PortfolioPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white py-16">
         <div className="container mx-auto px-4">
@@ -83,7 +83,7 @@ export default function PortfolioPage() {
       </section>
 
       {/* Projects Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
           {projects.length > 0 ? (
             <div className="space-y-12">
@@ -100,15 +100,15 @@ export default function PortfolioPage() {
                   </div>
                   <div className="md:w-3/5">
                     <div className="flex items-center gap-2 mb-4">
-                      <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                      <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium">
                         {project.category}
                       </span>
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3">{project.title}</h2>
-                    <p className="text-gray-600 mb-6">{project.description}</p>
+                    <h2 className="text-2xl font-bold text-foreground mb-3">{project.title}</h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">{project.description}</p>
                     <div className="flex flex-wrap gap-2 mb-6">
                       {project.tags.map((tag, index) => (
-                        <span key={index} className="px-2 py-1 bg-gray-100 rounded-full text-xs text-gray-700">
+                        <span key={index} className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs text-gray-700 dark:text-gray-300">
                           {tag}
                         </span>
                       ))}
@@ -126,7 +126,7 @@ export default function PortfolioPage() {
                           href={project.demoUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                          className="flex items-center gap-2 px-6 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                         >
                           在线演示
                           <ExternalLink size={18} />
@@ -137,7 +137,7 @@ export default function PortfolioPage() {
                           href={project.sourceUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                          className="flex items-center gap-2 px-6 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                         >
                           源代码
                           <GithubIcon size={18} />
@@ -153,7 +153,7 @@ export default function PortfolioPage() {
                 <div className="text-center mt-12">
                   <button
                     onClick={loadMore}
-                    className="px-8 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                    className="px-8 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                     disabled={loading}
                   >
                     {loading ? '加载中...' : '加载更多'}
@@ -163,13 +163,13 @@ export default function PortfolioPage() {
 
               {!hasMore && projects.length > 0 && (
                 <div className="text-center mt-12">
-                  <p className="text-gray-500">没有更多项目了</p>
+                  <p className="text-gray-500 dark:text-gray-400">没有更多项目了</p>
                 </div>
               )}
             </div>
           ) : (
             <div className="text-center py-24">
-              <p className="text-gray-600 text-xl mb-6">暂无作品集数据</p>
+              <p className="text-gray-600 dark:text-gray-400 text-xl mb-6">暂无作品集数据</p>
               <a
                 href="/"
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

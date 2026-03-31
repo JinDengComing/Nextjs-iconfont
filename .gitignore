@@ -43,3 +43,6 @@ next-env.d.ts
 # 数据库
 *.sql
 /src/lib/db/schema.sql
+# AI Log Plugin 推荐忽略项
+.specstory/
+.ailog/

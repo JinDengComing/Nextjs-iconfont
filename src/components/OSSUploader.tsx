@@ -4,13 +4,14 @@ import { useState } from 'react';
 import { Upload, Loader2, X } from 'lucide-react';
 
 interface OSSUploaderProps {
-  onUpload: (url: string) => void;
+  onUpload: (url: string, isCover?: boolean) => void;
   onError?: (error: string) => void;
   accept?: string;
   maxSize?: number;
   disabled?: boolean;
   className?: string;
   userId?: string;
+  multiple?: boolean;//是否支持多选
 }
 
 export default function OSSUploader({
@@ -21,6 +22,7 @@ export default function OSSUploader({
   disabled = false,
   className = '',
   userId,
+  multiple = false,
 }: OSSUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
@@ -102,7 +104,7 @@ export default function OSSUploader({
             <Loader2 className="w-8 h-8 text-blue-500 animate-spin mb-2" />
             <span className="text-sm text-gray-600 dark:text-gray-400">上传中...</span>
           </div>
-        ) : preview ? (
+        ) : preview && !multiple ? (
           <div className="relative w-full max-w-xs">
             <img
               src={preview}
@@ -121,8 +123,8 @@ export default function OSSUploader({
         ) : (
           <div className="flex flex-col items-center">
             <Upload className="w-12 h-12 text-gray-400 dark:text-gray-300 mb-2" />
-            <span className="text-sm text-gray-600 dark:text-gray-200">点击上传文件</span>
-            <span className="text-xs text-gray-500 dark:text-gray-200 mt-1">支持 {accept}，最大 {maxSize / 1024 / 1024}MB</span>
+            <span className="hidden md:inline-block text-sm text-gray-600 dark:text-gray-200">点击上传文件</span>
+            <span className="hidden md:inline-block text-xs text-gray-500 dark:text-gray-200 mt-1">支持 {accept}，最大 {maxSize / 1024 / 1024}MB</span>
           </div>
         )}
       </label>

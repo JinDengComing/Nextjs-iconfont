@@ -2,8 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import OSSUploader from '@/components/OSSUploader';
+import ImageModal from '@/components/ImageModal';
 import { api } from '@/lib/api';
 import { PortfolioProject } from '@/types';
+import { cn } from '@/lib/utils';
+import { useTheme } from '@/components/ThemeProvider';
+import { useVerification } from '@/components/VerificationContext';
 import { ArrowLeft, ExternalLink, Github as GithubIcon, Upload, Plus, Trash2 } from 'lucide-react';
 
 import dynamic from 'next/dynamic';
@@ -18,6 +23,8 @@ const ReactQuill = dynamic(() => import('react-quill-new'), {
 export default function PortfolioDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { theme } = useTheme();
+  const { verifyPassword } = useVerification();
   const [project, setProject] = useState<PortfolioProject | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +41,13 @@ export default function PortfolioDetailPage() {
   const [demoUrl, setDemoUrl] = useState<string | null>(null);
   const [sourceUrl, setSourceUrl] = useState<string | null>(null);
   const [tagInput, setTagInput] = useState('');
+  const [password, setPassword] = useState('');
+
+
+
+  // Image modal state
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [currentImageUrl, setCurrentImageUrl] = useState('');
 
   useEffect(() => {
     if (id) {
@@ -66,26 +80,54 @@ export default function PortfolioDetailPage() {
     }
   };
 
-  const handleImageUpload = async (file: File, isCover = false) => {
-    const formData = new FormData();
-    formData.append('file', file);
-
+  const handleImageUpload = async (url: string, isCover = false) => {
     try {
-      const response = await api.upload.image(formData);
-      if (response.success && response.data?.url) {
-        if (isCover) {
-          setCoverImage(response.data.url);
-        } else {
-          setImages(prev => [...prev, { url: response.data.url, alt: file.name }]);
-        }
+      // 验证密码
+      const isVerified = await verifyPassword();
+      if (!isVerified) {
+        return;
+      }
+      
+      if (isCover) {
+        setCoverImage(url);
+      } else {
+        setImages(prev => [...prev, { url, alt: '' }]);
       }
     } catch (err) {
       console.error('上传失败:', err);
     }
   };
 
+  const handleRemoveCoverImage = async () => {
+    // 验证密码
+    const isVerified = await verifyPassword();
+    if (!isVerified) {
+      return;
+    }
+    setCoverImage('');
+  };
+
+  const handleRemoveImage = async (index: number) => {
+    // 验证密码
+    const isVerified = await verifyPassword();
+    if (!isVerified) {
+      return;
+    }
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleImageError = (error: string) => {
+    setError(error);
+  };
+
   const handleSave = async () => {
     try {
+      // 验证密码
+      const isVerified = await verifyPassword();
+      if (!isVerified) {
+        return;
+      }
+      
       const projectData = {
         title,
         description,
@@ -124,7 +166,7 @@ export default function PortfolioDetailPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">加载中...</p>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">加载中...</p>
         </div>
       </div>
     );
@@ -147,7 +189,10 @@ export default function PortfolioDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={cn('min-h-screen bg-background text-foreground')} style={{
+      background: theme === 'light' ? '#ffffff' : '#0a0a0a',
+      color: theme === 'light' ? '#171717' : '#ededed'
+    }}>
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white py-16">
         <div className="container mx-auto px-4">
@@ -167,35 +212,51 @@ export default function PortfolioDetailPage() {
       </section>
 
       {/* Project Content */}
-      <section className="py-16 bg-white">
+      <section className={cn('py-16 bg-background')} style={{ background: theme === 'light' ? '#ffffff' : '#0a0a0a' }}>
         <div className="container mx-auto px-4">
           {isEditing ? (
             <div className="space-y-8">
               {/* Cover Image */}
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">封面图片</label>
-                <div className="flex items-center gap-4">
-                  <div className="w-48 h-27 bg-gray-200 rounded-lg overflow-hidden">
+                <label className={cn('block text-gray-700 dark:text-gray-300 mb-2 font-medium')} style={{ color: theme === 'light' ? '#171717' : '#ededed' }}>封面图片</label>
+                <div className="flex items-center  justify-center gap-4">
+                  <div className="w-48 rounded-lg overflow-hidden relative">
                     {coverImage ? (
-                      <img src={coverImage} alt="Cover" className="w-full h-full object-cover" />
+                      <>
+                        <img src={coverImage} alt="Cover" className="w-full h-full object-cover" />
+                        <button
+                          onClick={handleRemoveCoverImage}
+                          className="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center hover:bg-black/70 transition-colors text-white"
+                          title="删除封面图片"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-500">
-                        上传封面
+                        {/* 上传封面 */}
+                        {/* <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => e.target.files && e.target.files[0] && handleImageUpload(e.target.files[0], true)}
+                          className="w-full h-full absolute top-0 left-0 px-4 py-2 border border-gray-200 text-slate-400 rounded-lg opacity-0"
+                        /> */}
+                        <OSSUploader
+                          onUpload={(url) => handleImageUpload(url, true)}
+                          onError={handleImageError}
+                          accept="image/*"
+                          maxSize={5 * 1024 * 1024}
+                        />
                       </div>
                     )}
                   </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => e.target.files && e.target.files[0] && handleImageUpload(e.target.files[0], true)}
-                    className="px-4 py-2 border border-gray-200 text-slate-400 rounded-lg"
-                  />
+
                 </div>
               </div>
 
               {/* Title */}
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">项目名称</label>
+                <label className={cn('block text-gray-700 dark:text-gray-300 mb-2 font-medium')} style={{ color: theme === 'light' ? '#171717' : '#ededed' }}>项目名称</label>
                 <input
                   type="text"
                   value={title}
@@ -206,7 +267,7 @@ export default function PortfolioDetailPage() {
 
               {/* Description */}
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">项目描述</label>
+                <label className={cn('block text-gray-700 dark:text-gray-300 mb-2 font-medium')} style={{ color: theme === 'light' ? '#171717' : '#ededed' }}>项目描述</label>
                 <textarea
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
@@ -217,7 +278,7 @@ export default function PortfolioDetailPage() {
 
               {/* Content */}
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">项目内容</label>
+                <label className={cn('block text-gray-700 dark:text-gray-300 mb-2 font-medium')} style={{ color: theme === 'light' ? '#171717' : '#ededed' }}>项目内容</label>
                 <ReactQuill
                   value={content || ''}
                   onChange={setContent}
@@ -227,7 +288,7 @@ export default function PortfolioDetailPage() {
 
               {/* Category */}
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">分类</label>
+                <label className={cn('block text-gray-700 dark:text-gray-300 mb-2 font-medium')} style={{ color: theme === 'light' ? '#171717' : '#ededed' }}>分类</label>
                 <input
                   type="text"
                   value={category}
@@ -238,10 +299,14 @@ export default function PortfolioDetailPage() {
 
               {/* Tags */}
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">标签</label>
+                <label className={cn('block text-gray-700 dark:text-gray-300 mb-2 font-medium')} style={{ color: theme === 'light' ? '#171717' : '#ededed' }}>标签</label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {tags.map((tag, index) => (
-                    <div key={index} className="flex items-center gap-1 bg-gray-100 px-3 py-1 rounded-full">
+                    <div
+                      key={index}
+                      className={cn('flex items-center gap-1 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 px-3 py-1 rounded-full')}
+                      style={{ color: theme === 'light' ? 'var(--foreground)' : '#ededed', background: theme === 'light' ? '#f5f5f5' : '#222222' }}
+                    >
                       <span>{tag}</span>
                       <button
                         onClick={() => removeTag(tag)}
@@ -272,33 +337,43 @@ export default function PortfolioDetailPage() {
 
               {/* Images */}
               <div>
-                <label className="block text-gray-700 mb-2 font-medium">项目图片</label>
+                <label className={cn('block text-gray-700 dark:text-gray-300 mb-2 font-medium')} style={{ color: theme === 'light' ? '#171717' : '#ededed' }}>项目图片</label>
                 <div className="grid grid-cols-4 gap-4 mb-4">
                   {images?.length > 0 && images.map((img, index) => (
                     <div key={index} className="relative">
-                      <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden">
+                      <div className={cn('aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden')}>
                         <img src={img.url} alt={img.alt} className="w-full h-full object-cover" />
                       </div>
                       <button
-                        onClick={() => setImages(prev => prev.filter((_, i) => i !== index))}
+                        onClick={() => handleRemoveImage(index)}
                         className="absolute top-2 right-2 w-6 h-6 bg-white/80 rounded-full flex items-center justify-center hover:bg-white"
                       >
                         <Trash2 size={14} className="text-red-500" />
                       </button>
                     </div>
                   ))}
-                  <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-200 text-slate-400 hover:border-blue-500 cursor-pointer">
-                    <input
+                  <div className={cn('aspect-square bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-200 dark:border-gray-700 text-slate-400 hover:border-blue-500 cursor-pointer')}>
+                    {/* <input
                       type="file"
                       accept="image/*"
                       onChange={(e) => e.target.files && e.target.files[0] && handleImageUpload(e.target.files[0])}
                       className="hidden"
                       id="image-upload"
-                    />
-                    <label htmlFor="image-upload" className="flex flex-col items-center gap-2 text-gray-500 hover:text-blue-600">
+                    /> */}
+                    <div id="image-upload">
+                      <OSSUploader
+                        onUpload={(url) => handleImageUpload(url)}
+                        onError={handleImageError}
+                        accept="image/*"
+                        maxSize={5 * 1024 * 1024}
+                        multiple={true}
+                      />
+                    </div>
+                    {/* 
+                    <label htmlFor="image-upload" className="flex flex-col items-center gap-2 text-gray-500 dark:text-gray-400 hover:text-blue-600">
                       <Upload size={24} />
                       <span>添加图片</span>
-                    </label>
+                    </label> */}
                   </div>
                 </div>
               </div>
@@ -306,7 +381,7 @@ export default function PortfolioDetailPage() {
               {/* Links */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">在线演示链接</label>
+                  <label className={cn('block text-gray-700 dark:text-gray-300 mb-2 font-medium')} style={{ color: theme === 'light' ? '#171717' : '#ededed' }}>在线演示链接</label>
                   <input
                     type="url"
                     value={demoUrl || ''}
@@ -316,7 +391,7 @@ export default function PortfolioDetailPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">源代码链接</label>
+                  <label className={cn('block text-gray-700 dark:text-gray-300 mb-2 font-medium')} style={{ color: theme === 'light' ? '#171717' : '#ededed' }}>源代码链接</label>
                   <input
                     type="url"
                     value={sourceUrl || ''}
@@ -327,11 +402,13 @@ export default function PortfolioDetailPage() {
                 </div>
               </div>
 
+          
+
               {/* Actions */}
               <div className="flex gap-4">
                 <button
                   onClick={handleSave}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className={cn('px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors')}
                 >
                   保存
                 </button>
@@ -340,7 +417,7 @@ export default function PortfolioDetailPage() {
                     setIsEditing(false);
                     fetchProject();
                   }}
-                  className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                  className={cn('px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors')}
                 >
                   取消
                 </button>
@@ -349,42 +426,55 @@ export default function PortfolioDetailPage() {
           ) : (
             <div className="space-y-12">
               {/* Cover Image */}
-              <div className="rounded-lg overflow-hidden shadow-lg">
+              <div className={cn('rounded-lg overflow-hidden shadow-lg cursor-pointer')}
+                onClick={() => {
+                  if (project.coverImage) {
+                    setCurrentImageUrl(project.coverImage);
+                    setIsImageModalOpen(true);
+                  }
+                }}
+              >
                 {project.coverImage && <img
                   src={project.coverImage}
                   alt={project.title}
-                  className="w-full h-96 object-cover"
+                  className={cn('w-full h-96 object-cover hover:opacity-90 transition-opacity')}
                 />}
               </div>
 
               {/* Project Info */}
-              <div className="flex flex-wrap gap-4 mb-8">
-                <span className="px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+              <div className="flex flex-wrap items-end gap-4 mb-8">
+                <span className={cn('px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-sm font-medium')}>
                   {project.category}
                 </span>
                 {project.tags.map((tag, index) => (
-                  <span key={index} className="px-3 py-1 bg-gray-100 rounded-full text-xs text-gray-700">
+                  <span key={index} className={cn('h-6 items-end px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full text-xs text-gray-700 dark:text-gray-300')}>
                     {tag}
                   </span>
-                ))}
+                )
+                )}
               </div>
 
               {/* Project Content */}
-              <div className="prose max-w-none">
+              <div className={cn('prose max-w-none text-gray-500 dark:text-gray-400')} style={{ color: theme === 'light' ? '#171717' : '#ededed' }}>
                 <div dangerouslySetInnerHTML={{ __html: project.content }} />
               </div>
 
               {/* Project Images */}
               {project.images.length > 0 && (
                 <div className="mt-12">
-                  <h3 className="text-2xl font-bold mb-6">项目图片</h3>
+                  <h3 className={cn('text-2xl font-bold text-foreground mb-6')}>项目图片</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {project.images.map((img, index) => (
-                      <div key={index} className="rounded-lg overflow-hidden shadow-md">
+                      <div key={index} className={cn('rounded-lg overflow-hidden shadow-md cursor-pointer')}
+                        onClick={() => {
+                          setCurrentImageUrl(img.url);
+                          setIsImageModalOpen(true);
+                        }}
+                      >
                         <img
                           src={img.url}
                           alt={img.alt}
-                          className="w-full h-64 object-cover"
+                          className={cn('w-full h-64 object-cover hover:opacity-90 transition-opacity')}
                         />
                       </div>
                     ))}
@@ -399,7 +489,7 @@ export default function PortfolioDetailPage() {
                     href={project.demoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                    className={cn('flex items-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors')}
                   >
                     在线演示
                     <ExternalLink size={18} />
@@ -410,7 +500,7 @@ export default function PortfolioDetailPage() {
                     href={project.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                    className={cn('flex items-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors')}
                   >
                     源代码
                     <GithubIcon size={18} />
@@ -418,7 +508,7 @@ export default function PortfolioDetailPage() {
                 )}
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className={cn('flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors')}
                 >
                   编辑项目
                 </button>
@@ -429,7 +519,7 @@ export default function PortfolioDetailPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className={cn('bg-gray-900 text-white py-12')}>
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h3 className="text-2xl font-bold mb-4">{project.title}</h3>
@@ -448,6 +538,13 @@ export default function PortfolioDetailPage() {
           </div>
         </div>
       </footer>
+
+      {/* Image Modal */}
+      <ImageModal
+        isOpen={isImageModalOpen}
+        imageUrl={currentImageUrl}
+        onClose={() => setIsImageModalOpen(false)}
+      />
     </div>
   );
 }

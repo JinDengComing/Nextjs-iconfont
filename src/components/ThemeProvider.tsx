@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
-type Theme = 'light' | 'dark' | 'blue' | 'purple' | 'green';
+type Theme = 'light' | 'dark';
 
 interface ThemeContextType {
   theme: Theme;
@@ -21,21 +21,6 @@ const themeColors: Record<Theme, { primary: string; secondary: string; accent: s
     primary: '#ffffff',
     secondary: '#000000',
     accent: '#60a5fa',
-  },
-  blue: {
-    primary: '#1e40af',
-    secondary: '#eff6ff',
-    accent: '#3b82f6',
-  },
-  purple: {
-    primary: '#7c3aed',
-    secondary: '#faf5ff',
-    accent: '#a855f7',
-  },
-  green: {
-    primary: '#166534',
-    secondary: '#f0fdf4',
-    accent: '#22c55e',
   },
 };
 
@@ -59,12 +44,25 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const root = document.documentElement;
     const colors = themeColors[theme];
 
-    root.classList.remove('theme-light', 'theme-dark', 'theme-blue', 'theme-purple', 'theme-green');
+    root.classList.remove('theme-light', 'theme-dark', 'dark');
     root.classList.add(`theme-${theme}`);
+    if (theme === 'dark') {
+      root.classList.add('dark');
+    }
 
+    // 更新所有主题相关的CSS变量
     root.style.setProperty('--color-primary', colors.primary);
     root.style.setProperty('--color-secondary', colors.secondary);
     root.style.setProperty('--color-accent', colors.accent);
+    
+    // 根据主题更新背景和前景色
+    if (theme === 'light') {
+      root.style.setProperty('--background', '#ffffff');
+      root.style.setProperty('--foreground', '#171717');
+    } else {
+      root.style.setProperty('--background', '#0a0a0a');
+      root.style.setProperty('--foreground', '#ededed');
+    }
 
     localStorage.setItem('theme', theme);
   }, [theme, mounted]);
@@ -87,7 +85,4 @@ export function useTheme() {
 export const availableThemes: { id: Theme; name: string; icon: string; colors: string[] }[] = [
   { id: 'light', name: '浅色', icon: '☀️', colors: ['#ffffff', '#000000', '#3b82f6'] },
   { id: 'dark', name: '深色', icon: '🌙', colors: ['#000000', '#ffffff', '#60a5fa'] },
-  { id: 'blue', name: '蓝色', icon: '🔵', colors: ['#eff6ff', '#1e40af', '#3b82f6'] },
-  { id: 'purple', name: '紫色', icon: '🟣', colors: ['#faf5ff', '#7c3aed', '#a855f7'] },
-  { id: 'green', name: '绿色', icon: '🟢', colors: ['#f0fdf4', '#166534', '#22c55e'] },
 ];
