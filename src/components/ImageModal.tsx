@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 
 interface ImageModalProps {
   isOpen: boolean;
@@ -12,18 +13,25 @@ export default function ImageModal({ isOpen, imageUrl, onClose }: ImageModalProp
   if (!isOpen) return null;
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
       onClick={onClose}
     >
-      <div 
+      <div
         className="max-w-7xl max-h-full"
         onClick={(e) => e.stopPropagation()}
       >
-        <img 
+        {/* <img 
           src={imageUrl} 
           alt="Preview" 
           className="max-w-full max-h-[90vh] object-contain"
+        /> */}
+        <Image
+          src={imageUrl}
+          alt="Preview"
+          fill
+          quality={80}
+          className="max-w-full max-h-[90vh] rounded-lg w-full h-full object-contain"
         />
         <button
           className="absolute top-4 right-4 w-12 h-12 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors text-white"

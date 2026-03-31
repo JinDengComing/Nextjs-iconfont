@@ -37,11 +37,9 @@ query failed: ALTER TABLE `social_links` ADD CONSTRAINT `FK_e89409c923138326fbd6
 error: Error: Duplicate foreign key constraint name 'FK_e89409c923138326fbd66cfa418'
 ```
 
-
-
 ### 生产环境中的实体类被打包编译混淆了报错
 
-``````js
+```js
 📦 Registered entities: [ 'rD', 'rw', 'rL', 'rB', 'rP', 'rU' ]
 
 Get personal info error: s: No metadata for "PersonalInfo" was found.
@@ -57,5 +55,19 @@ Get personal info error: s: No metadata for "PersonalInfo" was found.
     at E (.next/server/chunks/[root-of-the-server]__04l3rrq._.js:1:1441)
 
 
-``````
+```
 
+### 使用next/imgae组件优化图片加载，需要在next.config.js中配置图片域名
+
+```js
+import Image from 'next/image';
+//......
+
+//使用这个Image组件加载图片的时候，要记得设置高度，不然图片不会展示。
+
+
+ // 配置图片域名
+  images: {
+    domains: ['myfirst-ddd.oss-cn-guangzhou.aliyuncs.com'],
+  },
+```

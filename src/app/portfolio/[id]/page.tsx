@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import OSSUploader from '@/components/OSSUploader';
 import ImageModal from '@/components/ImageModal';
@@ -87,7 +88,7 @@ export default function PortfolioDetailPage() {
       if (!isVerified) {
         return;
       }
-      
+
       if (isCover) {
         setCoverImage(url);
       } else {
@@ -127,7 +128,7 @@ export default function PortfolioDetailPage() {
       if (!isVerified) {
         return;
       }
-      
+
       const projectData = {
         title,
         description,
@@ -219,11 +220,17 @@ export default function PortfolioDetailPage() {
               {/* Cover Image */}
               <div>
                 <label className={cn('block text-gray-700 dark:text-gray-300 mb-2 font-medium')} style={{ color: theme === 'light' ? '#171717' : '#ededed' }}>封面图片</label>
-                <div className="flex items-center  justify-center gap-4">
-                  <div className="w-48 rounded-lg overflow-hidden relative">
+                <div className="flex items-center  gap-4">
+                  <div className="w-48 h-48 rounded-lg overflow-hidden relative">
                     {coverImage ? (
                       <>
-                        <img src={coverImage} alt="Cover" className="w-full h-full object-cover" />
+                        <Image
+                          src={coverImage}
+                          alt="Cover"
+                          fill
+                          className="w-full h-full object-cover"
+                          quality={80}
+                        />
                         <button
                           onClick={handleRemoveCoverImage}
                           className="absolute top-2 right-2 w-8 h-8 bg-black/50 rounded-full flex items-center justify-center hover:bg-black/70 transition-colors text-white"
@@ -342,7 +349,13 @@ export default function PortfolioDetailPage() {
                   {images?.length > 0 && images.map((img, index) => (
                     <div key={index} className="relative">
                       <div className={cn('aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden')}>
-                        <img src={img.url} alt={img.alt} className="w-full h-full object-cover" />
+                        <Image
+                          src={img.url}
+                          alt={img.alt || ''}
+                          fill
+                          className="w-full h-full object-cover"
+                          quality={80}
+                        />
                       </div>
                       <button
                         onClick={() => handleRemoveImage(index)}
@@ -402,7 +415,7 @@ export default function PortfolioDetailPage() {
                 </div>
               </div>
 
-          
+
 
               {/* Actions */}
               <div className="flex gap-4">
@@ -426,7 +439,7 @@ export default function PortfolioDetailPage() {
           ) : (
             <div className="space-y-12">
               {/* Cover Image */}
-              <div className={cn('rounded-lg overflow-hidden shadow-lg cursor-pointer')}
+              <div className={cn('rounded-lg overflow-hidden shadow-lg cursor-pointer relative h-96')}
                 onClick={() => {
                   if (project.coverImage) {
                     setCurrentImageUrl(project.coverImage);
@@ -434,10 +447,12 @@ export default function PortfolioDetailPage() {
                   }
                 }}
               >
-                {project.coverImage && <img
+                {project.coverImage && <Image
                   src={project.coverImage}
                   alt={project.title}
-                  className={cn('w-full h-96 object-cover hover:opacity-90 transition-opacity')}
+                  fill
+                  className={cn('w-full h-full object-cover hover:opacity-90 transition-opacity')}
+                  quality={80}
                 />}
               </div>
 
@@ -465,16 +480,18 @@ export default function PortfolioDetailPage() {
                   <h3 className={cn('text-2xl font-bold text-foreground mb-6')}>项目图片</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {project.images.map((img, index) => (
-                      <div key={index} className={cn('rounded-lg overflow-hidden shadow-md cursor-pointer')}
+                      <div key={index} className={cn('rounded-lg overflow-hidden shadow-md cursor-pointer relative h-64')}
                         onClick={() => {
                           setCurrentImageUrl(img.url);
                           setIsImageModalOpen(true);
                         }}
                       >
-                        <img
+                        <Image
                           src={img.url}
-                          alt={img.alt}
-                          className={cn('w-full h-64 object-cover hover:opacity-90 transition-opacity')}
+                          alt={img.alt || ''}
+                          fill
+                          className={cn('w-full h-full object-cover hover:opacity-90 transition-opacity')}
+                          quality={80}
                         />
                       </div>
                     ))}
@@ -507,7 +524,10 @@ export default function PortfolioDetailPage() {
                   </a>
                 )}
                 <button
-                  onClick={() => setIsEditing(true)}
+                  onClick={() => {
+                    setIsEditing(true);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                   className={cn('flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors')}
                 >
                   编辑项目

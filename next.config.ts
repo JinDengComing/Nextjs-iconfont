@@ -6,6 +6,21 @@ const nextConfig: NextConfig = {
   turbopack: {}, // 配置空的turbopack配置，消除错误
   // 将 ali-oss 标记为外部模块，不参与打包
   serverExternalPackages: ['ali-oss'],
+  // 配置图片域名
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'myfirst-ddd.oss-cn-guangzhou.aliyuncs.com',
+        pathname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: 'myfirst-ddd.oss-cn-guangzhou.aliyuncs.com',
+        pathname: '**',
+      },
+    ],
+  },
 
   compiler: {
     styledComponents: true, // 如果你用了的话

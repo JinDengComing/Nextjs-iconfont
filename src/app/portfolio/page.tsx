@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { api } from '@/lib/api';
 import { PortfolioProject } from '@/types';
 import { useTheme } from '@/components/ThemeProvider';
@@ -91,16 +92,18 @@ export default function PortfolioPage() {
             <div className="grid grid-cols-1 gap-8">
               {projects.map((project) => (
                 <div key={project.id} className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 transition-shadow hover:shadow-xl"
-                style={theme=='light'?{backgroundColor:'#f9f9f9',border:'1px solid #e5e5e5'}:{}}
-                
+                  style={theme == 'light' ? { backgroundColor: '#f9f9f9', border: '1px solid #e5e5e5' } : {}}
+
                 >
                   <div className="flex flex-col md:flex-row">
                     <div className="md:w-2/5">
-                      <div className="aspect-w-16 aspect-h-9">
-                        {project.coverImage && <img
+                      <div className="aspect-w-16 aspect-h-9 relative h-64 md:h-80">
+                        {project.coverImage && <Image
                           src={project.coverImage}
                           alt={project.title}
+                          fill
                           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                          quality={80}
                         />}
                       </div>
                     </div>

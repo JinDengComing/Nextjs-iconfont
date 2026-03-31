@@ -12,7 +12,7 @@ export default function ThemeSwitcher() {
   return (
     <div className="relative">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => { }}
         className="flex items-center gap-2 px-3 py-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
         title="切换主题"
       >
@@ -20,14 +20,14 @@ export default function ThemeSwitcher() {
         <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 hidden sm:inline">
           {currentTheme?.name}
         </span>
-        <svg
+        {/* <svg
           className={`w-4 h-4 text-zinc-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
+        </svg> */}
       </button>
 
       {isOpen && (
@@ -48,11 +48,10 @@ export default function ThemeSwitcher() {
                     setTheme(t.id);
                     setIsOpen(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                    theme === t.id
-                      ? 'bg-zinc-100 dark:bg-zinc-800'
-                      : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
-                  }`}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${theme === t.id
+                    ? 'bg-zinc-100 dark:bg-zinc-800'
+                    : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
+                    }`}
                 >
                   <span className="text-xl">{t.icon}</span>
                   <div className="flex-1 text-left">

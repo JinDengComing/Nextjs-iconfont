@@ -29,13 +29,28 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme && themeColors[savedTheme]) {
-      setTheme(savedTheme);
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
-    }
+    // 检查系统主题设置
+    const checkSystemTheme = () => {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setTheme('dark');
+      } else {
+        setTheme('light');
+      }
+    };
+
+    // 初始化检查
+    checkSystemTheme();
+
+    // 监听系统主题变化
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', checkSystemTheme);
+
     setMounted(true);
+
+    // 清理监听器
+    return () => {
+      mediaQuery.removeEventListener('change', checkSystemTheme);
+    };
   }, []);
 
   useEffect(() => {
@@ -54,7 +69,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty('--color-primary', colors.primary);
     root.style.setProperty('--color-secondary', colors.secondary);
     root.style.setProperty('--color-accent', colors.accent);
-    
+
     // 根据主题更新背景和前景色
     if (theme === 'light') {
       root.style.setProperty('--background', '#ffffff');

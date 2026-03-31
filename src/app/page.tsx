@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { api } from '@/lib/api';
 import { PersonalInfo, WorkExperience, Education, PortfolioProject } from '@/types';
 import { MapPin, Mail, Phone, Globe, Linkedin, Github, Twitter, Instagram, Edit } from 'lucide-react';
@@ -121,10 +122,13 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="relative w-48 h-48 rounded-full overflow-hidden border-4 border-white shadow-lg mx-auto">
-                  <img
+                  <Image
                     src={personalInfo?.avatar || '/placeholder-avatar.png'}
-                    alt={personalInfo?.name}
+                    alt={personalInfo?.name || ''}
+                    width={192}
+                    height={192}
                     className="w-full h-full object-cover"
+                    priority
                   />
                   <button
                     onClick={() => setShowAvatarUploader(true)}
@@ -249,9 +253,15 @@ export default function Home() {
               projectList?.length > 0 &&
               projectList.map((_: PortfolioProject) => (
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow" key={_?.id} style={theme === 'light' ? { background: 'var(--light)' } : {}}>
-                  <div className="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                  <div className="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center relative">
                     {_.coverImage ? (
-                      <img src={_.coverImage} alt="Cover" className="w-full h-full object-cover" />
+                      <Image
+                        src={_.coverImage}
+                        alt="Cover"
+                        fill
+                        className="w-full h-full object-cover"
+                        quality={80}
+                      />
                     ) : (
                       <p className="text-gray-500 dark:text-gray-400">{'项目预览图'}</p>
                     )}
