@@ -108,7 +108,7 @@ export default function Home() {
       <section className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white py-20">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/3 mb-8 md:mb-0">
+            <div className="md:w-1/3 mb-8 md:mb-0 animate-slide-in-left">
               {showAvatarUploader ? (
                 <div className="w-48 h-48 mx-auto">
                   <OSSUploader
@@ -140,13 +140,13 @@ export default function Home() {
                 </div>
               )}
             </div>
-            <div className="md:w-2/3 md:pl-8">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">{personalInfo?.name || 'Your Name'}</h1>
-              <p className="text-xl md:text-2xl mb-6">{personalInfo?.title || 'Your Title'}</p>
-              <p className="mb-8 text-blue-100 max-w-2xl">
+            <div className="md:w-2/3 md:pl-8 animate-slide-in-right">
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 animate-fade-in">{personalInfo?.name || 'Your Name'}</h1>
+              <p className="text-xl md:text-2xl mb-6 animate-fade-in delay-100">{personalInfo?.title || 'Your Title'}</p>
+              <p className="mb-8 text-blue-100 max-w-2xl animate-fade-in delay-200">
                 {personalInfo?.bio || 'Welcome to my personal portfolio website. Here you can learn more about my work experience, education, and projects.'}
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4 animate-fade-in delay-300">
                 {personalInfo?.email && (
                   <a href={`mailto:${personalInfo.email}`} className="flex items-center gap-2 text-white hover:text-blue-100">
                     <Mail size={18} />
@@ -172,7 +172,7 @@ export default function Home() {
                   </a>
                 )}
               </div>
-              <div className="mt-6 flex gap-4">
+              <div className="mt-6 flex gap-4 animate-fade-in delay-400">
                 {personalInfo?.socialLinks?.map((link) => (
                   <a
                     key={link.id}
@@ -196,8 +196,8 @@ export default function Home() {
       {/* Work Experience Section */}
       <section className="py-16 bg-background">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-foreground mb-12 text-center">工作履历</h2>
-          <div className="space-y-8">
+          <h2 className="text-3xl font-bold text-foreground mb-12 text-center animate-fade-in">工作履历</h2>
+          <div className="space-y-8 animate-fade-in delay-100">
             {workExperience.length > 0 ? (
               workExperience.map((exp) => (
                 <div key={exp.id} className="flex flex-col md:flex-row gap-6  border-b-indigo-500">
