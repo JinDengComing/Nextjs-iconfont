@@ -254,7 +254,7 @@ export default function Home() {
               projectList.map((_: PortfolioProject) => (
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow" key={_?.id} style={theme === 'light' ? { background: 'var(--light)' } : {}}>
                   <div className="h-48 bg-gray-200 dark:bg-gray-700 flex items-center justify-center relative">
-                    {_.coverImage ? (
+                    {(_.coverImage && _.coverImage !== 'null' && _.coverImage !== "") ? (
                       <Image
                         src={_.coverImage}
                         alt="Cover"

@@ -11,10 +11,9 @@ interface PasswordModalProps {
 export default function PasswordModal({ isOpen, onClose, onPasswordVerify }: PasswordModalProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen) return null;
-
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

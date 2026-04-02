@@ -14,10 +14,14 @@ export default function PortfolioPage() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [activeTab, setActiveTab] = useState('all');
+  const [activeTab, setActiveTab] = useState('pc');
   const [isTabFixed, setIsTabFixed] = useState(false);
   const [tabOffsetTop, setTabOffsetTop] = useState(0);
   const tabRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+   window.scrollTo(0, 200);
+  }, [activeTab]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -59,7 +63,7 @@ export default function PortfolioPage() {
     const handleScroll = () => {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       console.log(scrollTop, tabOffsetTop);
-      setIsTabFixed(scrollTop >=( tabOffsetTop + 180));
+      setIsTabFixed(scrollTop >= (tabOffsetTop + 180));
     };
 
     window.addEventListener('scroll', handleScroll);
@@ -120,15 +124,15 @@ export default function PortfolioPage() {
                     paddingRight: '1rem',
                     maxWidth: '1200px',
                     margin: '0 auto',
-                    ...(isTabFixed ? { left: '0', right: '0' ,top:'65px'} : {})
+                    ...(isTabFixed ? { left: '0', right: '0', top: '0px' } : {})
                   }}
                 >
-                  <button
+                  {/* <button
                     onClick={() => setActiveTab('all')}
                     className={`px-4 py-2 rounded-t-lg font-medium transition-colors ${activeTab === 'all' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}
                   >
                     全部
-                  </button>
+                  </button> */}
                   <button
                     onClick={() => setActiveTab('pc')}
                     className={`px-4 py-2 rounded-t-lg font-medium transition-colors ${activeTab === 'pc' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'}`}
@@ -145,7 +149,7 @@ export default function PortfolioPage() {
               </div>
 
               {/* Projects Grid */}
-              <div className="grid grid-cols-1 gap-8" 
+              <div className="grid grid-cols-1 gap-8"
               // style={isTabFixed ? { marginTop: '80px' } : {}}
               >
                 {projects.filter(project => {
@@ -162,9 +166,9 @@ export default function PortfolioPage() {
 
                   >
                     <div className="flex flex-col md:flex-row">
-                      <div className="md:w-2/5">
+                      <div className="md:w-2/5" style={{ border: '1px solid #ccc', padding: 5 }}>
                         <div className="aspect-w-16 aspect-h-9 relative h-64 md:h-80">
-                          {project.coverImage && <Image
+                          {(project.coverImage && project.coverImage !== 'null' && project.coverImage !== "") && <Image
                             src={project.coverImage}
                             alt={project.title}
                             fill

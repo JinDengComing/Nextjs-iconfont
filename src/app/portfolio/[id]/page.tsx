@@ -222,7 +222,7 @@ export default function PortfolioDetailPage() {
                 <label className={cn('block text-gray-700 dark:text-gray-300 mb-2 font-medium')} style={{ color: theme === 'light' ? '#171717' : '#ededed' }}>封面图片</label>
                 <div className="flex items-center  gap-4">
                   <div className="w-48 h-48 rounded-lg overflow-hidden relative">
-                    {coverImage ? (
+                    {coverImage && coverImage !== 'null' && coverImage !== "" ? (
                       <>
                         <Image
                           src={coverImage}
